@@ -1,6 +1,6 @@
 # Vercel 배포 가이드
 
-이 모노레포의 각 앱(mobile, bo, fm)을 Vercel에 개별적으로 배포하는 방법입니다.
+이 모노레포의 각 앱(investor, admin, trust, custodian)을 Vercel에 개별적으로 배포하는 방법입니다.
 
 ## 사전 준비
 
@@ -13,41 +13,54 @@
 
 각 앱을 개별 프로젝트로 배포합니다.
 
-#### 1. Mobile 앱 배포
+#### 1. Investor 앱 배포
 
 1. Vercel 대시보드에서 "Add New Project" 클릭
-2. GitHub 저장소 `bcg-ygpark/sha-poc` 선택
+2. GitHub 저장소 선택
 3. 프로젝트 설정:
-   - **Project Name**: `sha-poc-mobile` (또는 원하는 이름)
-   - **Root Directory**: `apps/mobile`
+   - **Project Name**: `shc-poc-investor` (또는 원하는 이름)
+   - **Root Directory**: `apps/investor`
    - **Framework Preset**: `Vite`
-   - **Build Command**: `pnpm --filter @template/mobile build`
+   - **Build Command**: `pnpm --filter @shc/investor build`
    - **Output Directory**: `dist`
    - **Install Command**: `pnpm install`
 4. "Deploy" 클릭
 
-#### 2. BO 앱 배포
+#### 2. Admin 앱 배포
 
 1. Vercel 대시보드에서 "Add New Project" 클릭
-2. GitHub 저장소 `bcg-ygpark/sha-poc` 선택
+2. GitHub 저장소 선택
 3. 프로젝트 설정:
-   - **Project Name**: `sha-poc-bo` (또는 원하는 이름)
-   - **Root Directory**: `apps/bo`
+   - **Project Name**: `shc-poc-admin` (또는 원하는 이름)
+   - **Root Directory**: `apps/admin`
    - **Framework Preset**: `Vite`
-   - **Build Command**: `pnpm --filter @template/bo build`
+   - **Build Command**: `pnpm --filter @shc/admin build`
    - **Output Directory**: `dist`
    - **Install Command**: `pnpm install`
 4. "Deploy" 클릭
 
-#### 3. FM 앱 배포
+#### 3. Trust 앱 배포
 
 1. Vercel 대시보드에서 "Add New Project" 클릭
-2. GitHub 저장소 `bcg-ygpark/sha-poc` 선택
+2. GitHub 저장소 선택
 3. 프로젝트 설정:
-   - **Project Name**: `sha-poc-fm` (또는 원하는 이름)
-   - **Root Directory**: `apps/fm`
+   - **Project Name**: `shc-poc-trust` (또는 원하는 이름)
+   - **Root Directory**: `apps/trust`
    - **Framework Preset**: `Vite`
-   - **Build Command**: `pnpm --filter @template/fm build`
+   - **Build Command**: `pnpm --filter @shc/trust build`
+   - **Output Directory**: `dist`
+   - **Install Command**: `pnpm install`
+4. "Deploy" 클릭
+
+#### 4. Custodian 앱 배포
+
+1. Vercel 대시보드에서 "Add New Project" 클릭
+2. GitHub 저장소 선택
+3. 프로젝트 설정:
+   - **Project Name**: `shc-poc-custodian` (또는 원하는 이름)
+   - **Root Directory**: `apps/custodian`
+   - **Framework Preset**: `Vite`
+   - **Build Command**: `pnpm --filter @shc/custodian build`
    - **Output Directory**: `dist`
    - **Install Command**: `pnpm install`
 4. "Deploy" 클릭
@@ -59,13 +72,16 @@
 npm i -g vercel
 
 # 각 앱 디렉토리에서 배포
-cd apps/bo
+cd apps/investor
 vercel --prod
 
-cd ../fm
+cd ../admin
 vercel --prod
 
-cd ../mobile
+cd ../trust
+vercel --prod
+
+cd ../custodian
 vercel --prod
 ```
 
@@ -82,9 +98,10 @@ Git 저장소와 연결하면:
 ## 배포 URL
 
 배포 완료 후 각 앱의 URL은 다음과 같이 생성됩니다:
-- Mobile: `https://sha-poc-mobile.vercel.app`
-- BO: `https://sha-poc-bo.vercel.app`
-- FM: `https://sha-poc-fm.vercel.app`
+- Investor: `https://shc-poc-investor.vercel.app`
+- Admin: `https://shc-poc-admin.vercel.app`
+- Trust: `https://shc-poc-trust.vercel.app`
+- Custodian: `https://shc-poc-custodian.vercel.app`
 
 (프로젝트 이름에 따라 URL이 달라질 수 있습니다)
 
@@ -93,12 +110,12 @@ Git 저장소와 연결하면:
 ### 빌드 실패 시
 
 1. **의존성 문제**: `pnpm install`이 루트에서 실행되는지 확인
-2. **경로 문제**: Root Directory가 정확히 `apps/mobile`, `apps/bo`, `apps/fm`인지 확인
+2. **경로 문제**: Root Directory가 정확히 `apps/investor`, `apps/admin`, `apps/trust`, `apps/custodian`인지 확인
 3. **빌드 명령어**: `--filter` 옵션이 올바른지 확인
 
 ### 저장소를 찾을 수 없는 경우
 
 1. Vercel 대시보드에서 GitHub 연동 확인
 2. 저장소가 private인 경우 Vercel에 권한 부여 필요
-3. 저장소 이름이 정확한지 확인: `bcg-ygpark/sha-poc`
+3. 저장소 이름이 정확한지 확인
 

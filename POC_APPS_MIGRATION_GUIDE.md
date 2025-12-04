@@ -1,15 +1,15 @@
 ## PoC 앱 마이그레이션 & 구현 가이드
 
-sha-make-bo / sha-make-fm / sha-make-mobile 디렉터리를 참고하여 PoC용 앱 3개를 `apps/` 하위에 구축하기 위한 가이드입니다.  
-디자인은 sha-make-* 를 최대한 그대로 옮기되, 버튼/인풋 등 UI 요소는 `packages/ui` 컴포넌트를 적극 활용합니다.
+**참고**: 이 문서는 레거시 SHA PoC 구조에 대한 가이드입니다.  
+현재 SHC PoC 구조는 `apps/investor`, `apps/admin`, `apps/trust`, `apps/custodian` 4개 앱으로 구성되어 있습니다.
 
 ---
 
-## 1. 타깃 앱 구조
+## 1. 타깃 앱 구조 (레거시)
 
-- **BO 앱 예시**: `apps/bo`
-- **FM 앱 예시**: `apps/fm`
-- **모바일 앱**: `apps/mobile` (기존 앱 구조를 기준으로 동일 패턴 유지)
+- **BO 앱 예시**: `apps/bo` (현재 `apps/admin`으로 변경됨)
+- **FM 앱 예시**: `apps/fm` (제거됨)
+- **모바일 앱**: `apps/mobile` (현재 `apps/investor`로 변경됨)
 
 각 앱 기본 구조:
 
@@ -42,7 +42,7 @@ apps/<app-name>/
 
 1. `sha-make-bo/src/pages`, `sha-make-bo/src/components`에서 **한 화면을 구성하는 컴포넌트**를 식별합니다.
 2. 각 화면을 `apps/bo/src/pages`로 복사하고, `App.tsx`의 `Route`에 path를 매핑합니다.
-3. `sha-make-fm`에 대해서도 동일하게 화면 목록을 정리하고, `apps/fm`에 라우트를 구성합니다.
+3. 각 화면이 **페이지 라우트인지, 모달/바텀시트인지**를 구분하여 구조를 설계합니다.
 4. 각 화면이 **페이지 라우트인지, 모달/바텀시트인지**를 구분하여 구조를 설계합니다.
 
 예시:
@@ -104,24 +104,13 @@ import { Button } from '@template/ui';
   - 간단한 PoC 수준에서는 페이지 내부 state로 처리하고,
   - 공유 상태가 필요한 경우 `contexts/` 디렉터리에 React Context를 정의합니다.
 
-### 4.2 FM 앱 (`apps/fm`)
-
-- **참고 소스**: `sha-make-fm/src`
-- **레이아웃**
-  - NAV 업데이트, 토큰 발행 화면 등을 탭 또는 개별 페이지로 구성합니다.
-- **라우팅**
-  - `TokenIssuance.tsx` → `/token-issuance`
-  - NAV 업데이트 관련 컴포넌트들을 `/nav-update` 등으로 매핑합니다.
-- **UI 공통화**
-  - 발행/수정 폼, 표, 카드 등은 `packages/ui`의 `Form`, `Table`, `Card`, `Button` 등을 최대한 재사용합니다.
-
 ---
 
 ## 5. 모바일 앱 구조 & Quick Access 패턴
 
-### 5.1 기본 구조 (`apps/mobile`)
+### 5.1 기본 구조 (`apps/investor`)
 
-기존 `apps/mobile`의 패턴을 그대로 따릅니다.
+기존 `apps/investor` (구 `apps/mobile`)의 패턴을 그대로 따릅니다.
 
 - `App.tsx`
   - `BrowserRouter` + `Routes`
@@ -179,14 +168,11 @@ useEffect(() => {
    - `apps/bo` 디렉터리 생성 및 Vite/React 설정.
    - sha-make-bo 페이지/컴포넌트 마이그레이션.
    - 버튼/인풋 등 `packages/ui`로 치환.
-4. **FM 앱 구현**
-   - `apps/fm` 디렉터리 생성 및 라우팅/페이지 구성.
-   - sha-make-fm 컴포넌트 마이그레이션 및 `packages/ui` 적용.
-5. **모바일 앱 확장**
-   - `apps/mobile` 구조를 유지하면서 필요한 신규 화면/플로우 추가.
+4. **Investor 앱 확장**
+   - `apps/investor` 구조를 유지하면서 필요한 신규 화면/플로우 추가.
    - `ScreenSummaryPanel` 섹션/라우트 업데이트.
    - `packages/ui` 기반으로 컨트롤 일원화.
 
-위 순서를 따라가면 sha-make-* 디자인을 그대로 유지하면서도, `packages/ui`를 활용한 일관된 PoC 앱 3종을 `apps/` 하위에 구성할 수 있습니다.
+**참고**: 현재 SHC PoC 구조에서는 `apps/investor`, `apps/admin`, `apps/trust`, `apps/custodian` 4개 앱이 사용됩니다.
 
 
