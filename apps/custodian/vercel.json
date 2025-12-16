@@ -1,0 +1,7 @@
+{
+  "buildCommand": "pnpm --filter @shc/custodian build",
+  "outputDirectory": "dist",
+  "devCommand": "pnpm --filter @shc/custodian dev",
+  "installCommand": "pnpm install"
+}
+

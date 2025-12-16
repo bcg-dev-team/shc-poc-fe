@@ -1,0 +1,7 @@
+{
+  "buildCommand": "pnpm --filter @shc/trust build",
+  "outputDirectory": "dist",
+  "devCommand": "pnpm --filter @shc/trust dev",
+  "installCommand": "pnpm install"
+}
+
