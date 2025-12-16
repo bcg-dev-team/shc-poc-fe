@@ -1,0 +1,15 @@
+{
+  "network": "pulse",
+  "chainId": 1337,
+  "contractAddress": "0x84E35f974Be80C3F5DD61858303c248cc1aea952",
+  "deployerAddress": "0x13795956edd9CDcC373d14c4D4F8D792e20fB1Fb",
+  "transactionHash": "0x9e7381695e3905ee3de113f9085ecb9f05ebb90acae32d5067bbc8fa2cb73e86",
+  "blockNumber": 1553580,
+  "timestamp": "2025-12-16T07:05:13.700Z",
+  "parameters": {
+    "admin": "0x13795956edd9CDcC373d14c4D4F8D792e20fB1Fb",
+    "minter": "0x13795956edd9CDcC373d14c4D4F8D792e20fB1Fb",
+    "name": "PF Token",
+    "symbol": "S-PF"
+  }
+}
