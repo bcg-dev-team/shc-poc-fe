@@ -20,7 +20,7 @@ module.exports = {
     },
     localhost: {
       url: "http://localhost:8545",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      // localhost는 hardhat node의 기본 계정 사용 (10000 ETH씩 보유)
     },
     
     // 테스트넷

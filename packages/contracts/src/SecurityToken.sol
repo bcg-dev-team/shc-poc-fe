@@ -110,7 +110,7 @@ contract SecurityToken {
         bytes32 _trancheId,
         address _to,
         uint256 _amount
-    ) external onlyIssuer isKYCVerified(_to) {
+    ) public onlyIssuer isKYCVerified(_to) {
         require(tranches[_trancheId].isActive, "Tranche not active");
         
         tranches[_trancheId].totalSupply += _amount;
