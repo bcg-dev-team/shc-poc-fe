@@ -384,7 +384,7 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
         trancheA,
         ethers.parseEther("1000000000"),
         ethers.parseEther("1000000000"),
-        30
+        60  // 만료 기간을 60일로 증가
       );
 
       const receipt = await tx.wait();
