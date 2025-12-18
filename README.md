@@ -9,6 +9,7 @@ digital-wallet-poc/
 ├── apps/
 │   └── mobile/          # 디지털 월렛 모바일 앱 (React)
 ├── packages/
+│   ├── contracts/       # 스마트 컨트랙트 (Hardhat, Solidity)
 │   └── ui/              # PoC용 UI 컴포넌트 (Button, Card, Input, Badge)
 └── .cursor/             # Cursor AI 설정
 ```
@@ -23,6 +24,7 @@ digital-wallet-poc/
 
 ### 📦 Packages
 
+- [@digital-wallet/contracts](./packages/contracts/README.md) - 신한캐피탈 PF 증권화 스마트 컨트랙트 (ERC-1400 기반)
 - [@digital-wallet/ui](./packages/ui/README.md) - PoC용 UI 컴포넌트 (Button, Card, Input, Badge, Divider)
 
 ## 🚀 빠른 시작
@@ -312,5 +314,9 @@ pnpm build-storybook      # Storybook 빌드
 | 모바일      | [![Expo](https://img.shields.io/badge/Expo-53.0.20-000020?logo=expo&logoColor=white)](https://expo.dev/)                                 | React Native 개발 플랫폼                            | MIT        |
 |             | [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)                            | 사용자 인터페이스 구축을 위한 JavaScript 라이브러리 | MIT        |
 |             | [![React Native](https://img.shields.io/badge/React_Native-0.80.1-61DAFB?logo=react&logoColor=white)](https://reactnative.dev/)          | 모바일 앱 개발 프레임워크                           | MIT        |
+| 블록체인    | [![Solidity](https://img.shields.io/badge/Solidity-0.8.20-363636?logo=solidity&logoColor=white)](https://soliditylang.org/)              | 스마트 컨트랙트 개발 언어                           | GPL-3.0    |
+|             | [![Hardhat](https://img.shields.io/badge/Hardhat-2.22.19-FFF04D?logo=hardhat&logoColor=black)](https://hardhat.org/)                     | 이더리움 개발 환경                                  | MIT        |
+|             | [![OpenZeppelin](https://img.shields.io/badge/OpenZeppelin-5.2.0-4E5EE4?logo=openzeppelin&logoColor=white)](https://openzeppelin.com/)   | 스마트 컨트랙트 보안 라이브러리                     | MIT        |
+|             | [![Ethers.js](https://img.shields.io/badge/Ethers.js-6.13.4-2535A0?logo=ethereum&logoColor=white)](https://docs.ethers.org/)             | 블록체인 인터랙션 라이브러리                        | MIT        |
 
 ---
