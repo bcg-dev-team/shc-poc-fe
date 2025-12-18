@@ -50,6 +50,7 @@ contract InterestDistribution {
     
     event InterestScheduled(bytes32 indexed trancheId, uint256 paymentDate, uint256 amount);
     event InterestPaid(bytes32 indexed trancheId, uint256 indexed paymentIndex, uint256 amount);
+    event PrincipalUpdated(bytes32 indexed trancheId, uint256 oldAmount, uint256 newAmount);
     event PartialRedemption(bytes32 indexed trancheId, uint256 amount, uint256 percentage);
     event FinalRedemption(bytes32 indexed trancheId, uint256 amount);
     event HoldingPeriodRecorded(bytes32 indexed trancheId, address indexed holder, uint256 startDate);
@@ -92,27 +93,23 @@ contract InterestDistribution {
     
     /**
      * @dev 이자 지급 스케줄 자동 생성
+     * - 이자 금액은 미리 계산하지 않고, 지급 시점에 현재 원금으로 계산
      */
     function _scheduleInterestPayments(bytes32 _trancheId) internal {
         RedemptionSchedule storage schedule = schedules[_trancheId];
         uint256 paymentDate = schedule.nextPaymentDate;
         uint256 index = 0;
-        
+
         while (paymentDate <= schedule.maturityDate) {
-            uint256 interestAmount = _calculateInterest(
-                schedule.principalAmount,
-                schedule.interestRate,
-                PAYMENT_INTERVAL
-            );
-            
+            // 이자 금액은 0으로 저장하고, payInterest에서 실제 계산
             interestPayments[_trancheId][index] = InterestPayment({
                 paymentDate: paymentDate,
-                amount: interestAmount,
+                amount: 0,
                 isPaid: false
             });
-            
-            emit InterestScheduled(_trancheId, paymentDate, interestAmount);
-            
+
+            emit InterestScheduled(_trancheId, paymentDate, 0);
+
             paymentDate += PAYMENT_INTERVAL;
             index++;
         }
@@ -120,6 +117,8 @@ contract InterestDistribution {
     
     /**
      * @dev 이자 계산 (3개월 기준)
+     * - 90일(3개월): 월할 계산 (3/12)
+     * - 그 외: 일할 계산 (일수/365)
      */
     function _calculateInterest(
         uint256 _principal,
@@ -129,27 +128,60 @@ contract InterestDistribution {
         // 연 이자율을 기간에 맞게 계산
         // _rate는 basis points (예: 600 = 6%)
         uint256 yearlyInterest = (_principal * _rate) / BASIS_POINTS;
+
+        // 90일(3개월)일 경우 월할 계산 (3/12 = 1/4)
+        if (_period == 90 days) {
+            return (yearlyInterest * 3) / 12;
+        }
+
+        // 그 외는 일할 계산
         uint256 periodInterest = (yearlyInterest * _period) / 365 days;
         return periodInterest;
     }
     
     /**
      * @dev 이자 지급 처리 (3개월 후불)
+     * - 지급 시점에 현재 원금으로 이자를 계산
      */
     function payInterest(bytes32 _trancheId, uint256 _paymentIndex) external onlyTrustee {
         InterestPayment storage payment = interestPayments[_trancheId][_paymentIndex];
         require(!payment.isPaid, "Already paid");
         require(block.timestamp >= payment.paymentDate, "Not yet due");
-        
+
+        // 지급 시점에 현재 원금으로 이자 계산
+        RedemptionSchedule storage schedule = schedules[_trancheId];
+        uint256 interestAmount = _calculateInterest(
+            schedule.principalAmount,
+            schedule.interestRate,
+            PAYMENT_INTERVAL
+        );
+
+        payment.amount = interestAmount;
         payment.isPaid = true;
-        totalInterestPaid[_trancheId] += payment.amount;
-        
+        totalInterestPaid[_trancheId] += interestAmount;
+
         // 실제 자금 이체는 off-chain에서 처리하고 기록만 온체인에 저장
-        emit InterestPaid(_trancheId, _paymentIndex, payment.amount);
-        
+        emit InterestPaid(_trancheId, _paymentIndex, interestAmount);
+
         schedules[_trancheId].paymentCount++;
     }
-    
+
+    /**
+     * @dev 원금 업데이트 (추가 발행 시)
+     */
+    function updatePrincipalAmount(bytes32 _trancheId, uint256 _additionalAmount) external onlyTrustee {
+        RedemptionSchedule storage schedule = schedules[_trancheId];
+        require(schedule.isActive, "Schedule not active");
+        require(_additionalAmount > 0, "Amount must be positive");
+
+        uint256 oldAmount = schedule.principalAmount;
+        uint256 newAmount = oldAmount + _additionalAmount;
+
+        schedule.principalAmount = newAmount;
+
+        emit PrincipalUpdated(_trancheId, oldAmount, newAmount);
+    }
+
     /**
      * @dev 부분 상환 처리 (80%)
      */

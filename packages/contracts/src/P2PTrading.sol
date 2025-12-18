@@ -192,15 +192,54 @@ contract P2PTrading {
     }
     
     /**
-     * @dev 보유기간 계산 (단순 일할 계산)
+     * @dev 보유기간 계산 (일할 계산)
+     * - 이자 지급 이력이 있으면: 마지막 이자 지급일로부터 현재까지의 경과 일수 계산
+     * - 이자 지급 이력이 없으면: 스케줄 시작일로부터 현재까지의 경과 일수 계산
      */
-    function _calculateHoldingDays(bytes32 _trancheId, address _holder) internal view returns (uint256) {
-        // 실제로는 InterestDistribution 컨트랙트에서 보유 시작일을 가져와야 함
-        // 여기서는 개념적으로만 구현
-        
-        // 보유 시작일부터 현재까지의 일수
-        // 실제 구현에서는 holdingHistory를 조회
-        return 90; // 예시: 3개월 보유
+    function _calculateHoldingDays(bytes32 _trancheId, address /* _holder */) internal view returns (uint256) {
+        // 스케줄 정보 가져오기
+        (
+            ,
+            ,
+            ,
+            uint256 paymentCount,
+
+        ) = interestDistribution.getScheduleDetails(_trancheId);
+
+        // 마지막 이자 지급 정보 가져오기
+        if (paymentCount > 0) {
+            uint256 lastPaymentIndex = paymentCount - 1;
+            (
+                uint256 paymentDate,
+                ,
+                bool isPaid
+            ) = interestDistribution.interestPayments(_trancheId, lastPaymentIndex);
+
+            if (isPaid && paymentDate > 0) {
+                // 마지막 이자 지급일부터 현재까지의 일수
+                uint256 holdingDays = (block.timestamp - paymentDate) / 1 days;
+                return holdingDays;
+            }
+        }
+
+        // 이자 지급이 없으면 스케줄 시작일부터 계산
+        (
+            ,
+            ,
+            ,
+            uint256 startDate,
+            ,
+            ,
+            ,
+
+        ) = interestDistribution.schedules(_trancheId);
+
+        if (startDate > 0) {
+            uint256 holdingDays = (block.timestamp - startDate) / 1 days;
+            return holdingDays;
+        }
+
+        return 0;
     }
     
     /**
@@ -208,7 +247,7 @@ contract P2PTrading {
      */
     function _calculateSettlementInterest(
         bytes32 _trancheId,
-        address _seller,
+        address /* _seller */,
         uint256 _amount,
         uint256 _holdingDays
     ) internal view returns (uint256) {

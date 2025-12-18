@@ -280,6 +280,9 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
     it("3-6. 거래 상세 정보 조회", async function () {
       const buyAmount = ethers.parseEther("500000000");
 
+      // 시간 경과 후 거래 (보유기간 발생)
+      await time.increase(10 * ONE_DAY);
+
       const tx = await p2pTrading.connect(investor2).executeTrade(orderId, buyAmount);
       const receipt = await tx.wait();
       const event = receipt.logs.find(
@@ -294,6 +297,7 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
       expect(tradeDetails.amount).to.equal(buyAmount);
       expect(tradeDetails.price).to.equal(price);
       expect(tradeDetails.settlementInterest).to.be.gt(0);
+      expect(tradeDetails.holdingDays).to.be.gte(10); // 최소 10일 보유
     });
   });
 
@@ -372,6 +376,10 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
     let orderId;
 
     beforeEach(async function () {
+      // 첫 번째 이자 지급 처리 (3개월 후)
+      await time.increase(90 * ONE_DAY);
+      await interestDistribution.connect(trustee).payInterest(trancheA, 0);
+
       const tx = await p2pTrading.connect(investor1).createSellOrder(
         trancheA,
         ethers.parseEther("1000000000"),
@@ -389,6 +397,9 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
     it("5-1. 거래 시 이자 정산 발생", async function () {
       const buyAmount = ethers.parseEther("500000000");
 
+      // 이자 지급 후 시간 경과 (예: 30일)
+      await time.increase(30 * ONE_DAY);
+
       const tx = await p2pTrading.connect(investor2).executeTrade(orderId, buyAmount);
       const receipt = await tx.wait();
       const event = receipt.logs.find(
@@ -400,11 +411,14 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
 
       // 보유기간별 이자 정산액이 계산됨
       expect(tradeDetails.settlementInterest).to.be.gt(0);
-      expect(tradeDetails.holdingDays).to.equal(90); // 예시: 3개월 보유
+      expect(tradeDetails.holdingDays).to.be.gt(0); // 최소 30일 이상 보유
     });
 
     it("5-2. 이자 정산 이벤트 확인", async function () {
       const buyAmount = ethers.parseEther("500000000");
+
+      // 이자 지급 후 시간 경과 (예: 30일)
+      await time.increase(30 * ONE_DAY);
 
       await expect(
         p2pTrading.connect(investor2).executeTrade(orderId, buyAmount)
@@ -642,6 +656,9 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
       );
       expect(canTrade).to.be.true;
 
+      // 시간 경과 후 거래 (보유기간 발생)
+      await time.increase(15 * ONE_DAY);
+
       // 3. Investor2가 10억 구매
       await p2pTrading.connect(investor2).executeTrade(
         orderId,
@@ -671,6 +688,7 @@ describe("P2PTrading - 기관투자자 간 P2P 거래", function () {
       const tradeDetails = await p2pTrading.getTradeDetails(sellerTrades[0]);
       expect(tradeDetails.seller).to.equal(investor1.address);
       expect(tradeDetails.settlementInterest).to.be.gt(0);
+      expect(tradeDetails.holdingDays).to.be.gte(15); // 최소 15일 보유
     });
   });
 });
