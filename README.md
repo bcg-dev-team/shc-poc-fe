@@ -1,31 +1,68 @@
-# 🚀 Digital Wallet Mobile App
+# 🏦 신한캐피탈 PF 증권화 토큰 PoC
 
-React + TypeScript + Vite 기반의 디지털 월렛 모바일 애플리케이션 PoC 프로젝트입니다.
+신한캐피탈의 프로젝트 파이낸싱(PF) 대출 증권화를 위한 블록체인 기반 PoC 프로젝트입니다.
+ERC-1400 표준 기반의 스마트 컨트랙트와 React 기반의 웹 애플리케이션으로 구성되어 있습니다.
 
 ## 🏗️ 프로젝트 구조
 
 ```
-digital-wallet-poc/
+shc-pf-token-poc/
 ├── apps/
-│   └── mobile/          # 디지털 월렛 모바일 앱 (React)
+│   ├── investor/        # 투자자용 웹 애플리케이션 (React)
+│   ├── admin/           # 관리자용 웹 애플리케이션 (React)
+│   ├── trust/           # 신탁/수탁기관용 웹 애플리케이션 (React)
+│   └── custodian/       # 커스터디언용 웹 애플리케이션 (React)
 ├── packages/
-│   ├── contracts/       # 스마트 컨트랙트 (Hardhat, Solidity)
-│   └── ui/              # PoC용 UI 컴포넌트 (Button, Card, Input, Badge)
+│   ├── contracts/       # PF 증권화 스마트 컨트랙트 (Hardhat, Solidity)
+│   └── ui/              # 공통 UI 컴포넌트 라이브러리
 └── .cursor/             # Cursor AI 설정
 ```
+
+## ✨ 주요 기능
+
+### 📜 스마트 컨트랙트 (packages/contracts)
+
+- **증권형 토큰 발행** (SecurityToken.sol)
+  - ERC-1400 기반 증권형 토큰
+  - Senior/Junior Tranche 구조 (6%/12% 이자율)
+  - KYC/AML 인증 시스템
+  - 락업 기간 및 양도 제한
+
+- **이자 배분 및 상환** (InterestDistribution.sol)
+  - 3개월 후불 방식 이자 지급
+  - 부분 상환 (80%) 및 최종 상환 (20%)
+  - 한도대출 증액 지원
+
+- **자산 평가** (AssetValuation.sol)
+  - K-IFRS 기준 상각후원가법
+  - DCF 기반 공정가치 평가
+  - 월별 상각 스케줄 관리
+
+- **P2P 거래** (P2PTrading.sol)
+  - 기관투자자 간 토큰 거래
+  - 보유기간별 이자 정산 (일할 계산)
+  - 매도/매수 주문 매칭
+
+### 🖥️ 웹 애플리케이션 (apps/*)
+
+각 참여자별 맞춤형 웹 인터페이스 제공:
+- **투자자** (investor): 토큰 보유 현황, P2P 거래, 이자 수령 내역
+- **관리자** (admin): 토큰 발행, Tranche 관리, 전체 현황 모니터링
+- **신탁** (trust): 이자 지급, 상환 처리, 자산 평가
+- **커스터디언** (custodian): 투자자 KYC 인증, 토큰 보관 관리
 
 ## 📚 문서
 
 ### 📖 가이드
 
-- [PoC 설정 완료](./POC_SETUP_COMPLETE.md) - 전체 설정 완료 내역
-- [UI 리팩토링 완료](./UI_REFACTORING_COMPLETE.md) - UI 컴포넌트 통합 내역
-- [모바일 앱 가이드](./apps/mobile/README.md) - 앱 개발 가이드
+- [스마트 컨트랙트 가이드](./packages/contracts/README.md) - 컨트랙트 구조 및 사용법
+- [프로젝트 구조](./packages/contracts/PROJECT_STRUCTURE.md) - 전체 프로젝트 구조
+- [시나리오 리뷰](./packages/contracts/SCENARIO_REVIEW.md) - 비즈니스 시나리오 분석
 
 ### 📦 Packages
 
 - [@digital-wallet/contracts](./packages/contracts/README.md) - 신한캐피탈 PF 증권화 스마트 컨트랙트 (ERC-1400 기반)
-- [@digital-wallet/ui](./packages/ui/README.md) - PoC용 UI 컴포넌트 (Button, Card, Input, Badge, Divider)
+- [@digital-wallet/ui](./packages/ui/README.md) - 공통 UI 컴포넌트 (Button, Card, Input, Badge, Divider)
 
 ## 🚀 빠른 시작
 
@@ -88,7 +125,7 @@ digital-wallet-poc/
 
    ```bash
    git clone <repository-url>
-   cd vue3-monorepo-template-2
+   cd shc-poc-fe
    ```
 
 2. **의존성 설치**
@@ -98,84 +135,31 @@ digital-wallet-poc/
    pnpm install
    ```
 
-3. **Vue Inspector 설정 (선택사항)**
+3. **스마트 컨트랙트 설정 (선택사항)**
 
    ```bash
-   # macOS/Linux
-   ./shared/scripts/setup-vue-inspector.sh
-
-   # Windows (Git Bash/WSL)
-   ./shared/scripts/setup-vue-inspector.sh
-
-   # Windows (Command Prompt)
-   shared\scripts\setup-vue-inspector.bat
+   cd packages/contracts
+   cp .env.example .env
+   # .env 파일 편집하여 네트워크 설정
    ```
 
 4. **개발 서버 실행**
 
    ```bash
-   # MODA 앱 개발 서버
+   # 투자자 앱 개발 서버
    pnpm dev
+   # 또는
+   pnpm dev:investor
 
-   # 데스크톱 앱 개발 서버
-   pnpm dev:desktop
+   # 관리자 앱 개발 서버
+   pnpm dev:admin
 
-   # 모바일 앱 개발 서버
-   pnpm dev:mobile
+   # 신탁 앱 개발 서버
+   pnpm dev:trust
+
+   # 커스터디언 앱 개발 서버
+   pnpm dev:custodian
    ```
-
-### 5. 빌드
-
-```bash
-# 인터랙티브 빌드 (권장) - 각 작업을 선택적으로 수행
-pnpm build
-
-# 전체 빌드 (모든 작업 자동 수행)
-pnpm build:all
-
-# 개별 앱 빌드
-pnpm build:desktop
-pnpm build:mobile
-pnpm build:sample-desktop
-
-# Bundle Analyzer와 함께 빌드 (번들 크기 분석)
-pnpm build:analyze:desktop        # 데스크톱 앱 번들 분석
-pnpm build:analyze:mobile         # 모바일 앱 번들 분석
-pnpm build:analyze:sample-desktop # 샘플 데스크톱 앱 번들 분석
-
-# 네이티브 앱 빌드
-pnpm mobile:build:android    # Android APK/AAB 빌드
-pnpm mobile:build:ios        # iOS 빌드
-```
-
-**인터랙티브 빌드 옵션**
-
-`pnpm build` 실행 시 다음 항목들을 선택적으로 실행할 수 있습니다:
-
-- **API 자동 생성 스킵 여부** (기본: Y - 스킵)
-- **Design Tokens 생성 스킵 여부** (기본: Y - 스킵)
-  - 토큰 파일이 이미 존재하면 TypeScript만 다시 빌드
-  - 토큰 파일이 없으면 전체 빌드 수행
-- **아이콘 최적화 스킵 여부** (기본: Y - 스킵)
-  - SVG 아이콘 최적화 작업
-- **순환참조 검사 스킵 여부** (기본: Y - 스킵)
-- **빌드할 앱 선택** (기본: sample-desktop만)
-  - sample-desktop만
-  - sample-desktop + mobile
-  - sample-desktop + mobile + desktop
-  - 모든 앱
-
-**💡 Tip:**
-
-- `y`, `n`, `숫자` 키를 누르면 **Enter 없이 바로 진행**됩니다.
-- Enter 키만 누르면 기본값이 선택됩니다.
-
-**⚠️ 참고:** `mobile-native` 앱은 별도로 빌드해야 합니다.
-
-- Android: `pnpm mobile:build:android`
-- iOS: `pnpm mobile:build:ios`
-
-**📖 상세 가이드:** [빌드 스크립트 가이드](./shared/scripts/README.md#인터랙티브-빌드-옵션)에서 각 옵션에 대한 자세한 설명과 시나리오별 권장 설정을 확인하세요.
 
 ## 🛠️ 개발 도구
 
@@ -183,140 +167,121 @@ pnpm mobile:build:ios        # iOS 빌드
 
 ```bash
 # 개발
-pnpm dev:desktop          # 데스크톱 앱 개발 서버
-pnpm dev:mobile           # 모바일 앱 개발 서버
+pnpm dev:investor         # 투자자 앱 개발 서버
+pnpm dev:admin            # 관리자 앱 개발 서버
+pnpm dev:trust            # 신탁 앱 개발 서버
+pnpm dev:custodian        # 커스터디언 앱 개발 서버
 
 # 빌드
-pnpm build                # 인터랙티브 빌드 (권장)
-pnpm build:all            # 전체 빌드 (모든 작업 자동 수행)
-pnpm build:desktop        # 데스크톱 앱 빌드
-pnpm build:mobile         # 모바일 앱 빌드
-pnpm build:sample-desktop # 샘플 데스크톱 앱 빌드
+pnpm build:investor       # 투자자 앱 빌드
+pnpm build:admin          # 관리자 앱 빌드
+pnpm build:trust          # 신탁 앱 빌드
+pnpm build:custodian      # 커스터디언 앱 빌드
 
-# API 및 서비스 생성
-pnpm generate:api         # API 클라이언트 자동 생성
-pnpm generate:services    # 서비스 자동 생성
-pnpm generate:all         # 모든 생성 작업 수행
-
-# 아이콘 최적화
-pnpm optimize-icons       # SVG 아이콘 최적화
-
-# Bundle Analyzer (번들 크기 분석)
-pnpm build:analyze:desktop        # 데스크톱 앱 번들 분석
-pnpm build:analyze:mobile         # 모바일 앱 번들 분석
-pnpm build:analyze:sample-desktop # 샘플 데스크톱 앱 번들 분석
-
-# 테스팅 (TBD)
-pnpm test                 # 전체 테스트 실행
-pnpm test:unit            # 단위 테스트만
-pnpm test:e2e             # E2E 테스트만
-pnpm test:coverage        # 커버리지 리포트
+# 스마트 컨트랙트
+cd packages/contracts
+npm test                  # 컨트랙트 테스트 실행
+npm run deploy            # 컨트랙트 배포
+npm run verify            # 컨트랙트 검증
 
 # 코드 품질
 pnpm lint                 # ESLint 검사 및 수정
 pnpm format               # Prettier 포맷팅
 pnpm type-check           # TypeScript 타입 검사
-
-# API 자동 생성
-pnpm generate:api         # Swagger로부터 타입 및 API 클라이언트 생성
-pnpm generate:services    # 서비스 클래스 자동 생성
-
-# Storybook
-pnpm storybook            # Storybook 개발 서버
-pnpm build-storybook      # Storybook 빌드
 ```
 
-## 🚀 배포 (Deployment)
+## 🧪 테스트
 
-### 배포 프로세스
+### 스마트 컨트랙트 테스트
 
-#### 1. **기능 개발 및 브랜치 관리**
+```bash
+cd packages/contracts
+npm test
+```
 
-- 기능 작업은 `feature` 브랜치에서 진행합니다.
-- 작업이 완료된 `feature` 브랜치는 `main` 브랜치에 병합합니다.
+**테스트 커버리지:**
+- AssetValuation: 상각후원가법 자산 평가 (30 tests)
+- InterestDistribution: 이자 배분 및 상환 처리 (45 tests)
+- P2PTrading: 기관투자자 간 P2P 거래 (30 tests)
+- SecurityToken: 증권형 토큰 발행 및 관리 (35 tests)
+- 통합 시나리오: 전체 프로세스 검증 (45 tests)
 
-#### 2. **릴리즈 준비**
+**총 185개 테스트 통과**
 
-- `main` 브랜치를 `release/sample-desktop` 브랜치로 병합합니다.
+## 🎯 비즈니스 시나리오
 
-#### 3. **CI 자동화**
+### 시나리오 1-7: 전체 프로세스
 
-- `release/sample-desktop` 브랜치 병합 시 GitHub Workflow가 실행되어 CI 작업이 진행됩니다.
-- CI가 성공적으로 완료되면 Docker 이미지가 생성됩니다.
-- 동시에 [kubernetes_config](https://github.com/bcg-dev-team/kubernetes_config/tree/helm) 레포지토리가 업데이트됩니다.
+1. **[S1] 초기 발행**: Tranche A/B 생성 및 투자자에게 발행
+2. **[S2] 최초 이자 지급**: 3개월 후불 방식 이자 지급
+3. **[S3] 한도대출 추가 실행**: Tranche A 증액 (750억)
+4. **[S4] 증액된 원금 이자 지급**: 1,250억 기준 이자 계산
+5. **[S5] 부분 상환**: 원금의 80% 상환
+6. **[S6] 최종 상환**: 잔여 20% 상환 및 만기 처리
+7. **[S7] P2P 거래**: 보유기간별 이자 정산 (일할 계산)
 
-#### 4. **배포 알림 및 ArgoCD 연동**
+자세한 내용은 [SCENARIO_REVIEW.md](./packages/contracts/SCENARIO_REVIEW.md) 참조
 
-- [kubernetes_config](https://github.com/bcg-dev-team/kubernetes_config/tree/helm) 레포지토리 업데이트 시 웹훅 채널([#moda_webhook](https://blockchainglobalhq.slack.com/archives/C09HF0VPXH6))로 배포 알림이 전송됩니다.
-- CI 작업 중 에러 발생 후 실패 알림이 전송되면, **Github Action URL** 링크를 클릭하여 에러 내용을 확인합니다.
+## 📊 아키텍처
 
-  **실패 알림(예시)**
+### 시스템 구성
 
-  ![ci_fail.png](docs/images/ci_fail.png)
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   투자자 앱      │     │   관리자 앱      │     │   신탁 앱        │
+│   (investor)    │     │    (admin)      │     │    (trust)      │
+└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                    ┌────────────▼────────────┐
+                    │   스마트 컨트랙트        │
+                    │  (Ethereum Network)     │
+                    ├─────────────────────────┤
+                    │  SecurityToken.sol      │
+                    │  InterestDistribution   │
+                    │  AssetValuation.sol     │
+                    │  P2PTrading.sol         │
+                    └─────────────────────────┘
+```
 
-- CI 작업 완료 후 성공 알림이 전송되면, **Deploy URL** 링크를 클릭하여 ArgoCD UI 화면으로 이동합니다.
-
-  **성공 알림(예시)**
-
-  ![ci_success.png](docs/images/ci_success.png)
-
-#### 5. **ArgoCD UI에서 배포 동기화**
-
-- CI 완료 후, [ArgoCD UI](https://172.25.1.24:12121/login?return_url=https%3A%2F%2F172.25.1.24%3A12121%2Fapplications%2Fmoda-front-desktop)에서 SYNC 버튼을 눌러 배포 상태를 동기화하여 배포를 완료합니다.
-
-  **ArgoCD UI (예시)**
-
-  ![argocd_ui.png](docs/images/argocd_ui.png)
-
-## 📚 추가 문서
-
-- [Cursor AI 명령어 사용법](./CURSOR_COMMANDS.md) - Cursor AI 명령어 상세 가이드
-- [모노레포 아키텍처 가이드](./docs/architecture.md) - 패키지 구조 및 데이터 흐름
-- [API 자동 생성 가이드](./docs/api-generation-guide.md) - OpenAPI Generator 활용 가이드 ⭐
-- [모바일 배포 가이드](./docs/mobile-deployment.md) - React Native 앱 배포 방법
-- [순환 의존성 방지](./docs/circular-dependency-prevention.md) - 모노레포에서 순환 의존성 방지
-
-### 필수 요구사항
-
-![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)
-![PNPM](https://img.shields.io/badge/PNPM-%3E%3D8.0.0-F69220?logo=pnpm&logoColor=white)
-
-## Technology Used
+### 기술 스택
 
 | Category    | Name/Version                                                                                                                             | Description                                         | License    |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ---------- |
-| 핵심 기술   | [![Vue.js](https://img.shields.io/badge/Vue.js-3.5.18-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)                           | 프로그레시브 JavaScript 프레임워크                  | MIT        |
-|             | [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)                 | JavaScript 런타임 환경                              | MIT        |
-|             | [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)   | JavaScript의 타입이 있는 상위 집합                  | Apache-2.0 |
-| 빌드 도구   | [![Vite](https://img.shields.io/badge/Vite-5.4.19-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)                                | 차세대 프론트엔드 빌드 도구                         | MIT        |
-|             | [![PNPM](https://img.shields.io/badge/PNPM-%3E%3D8.0.0-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)                              | 빠르고 효율적인 패키지 매니저                       | MIT        |
-| 라우팅      | [![Vue Router](https://img.shields.io/badge/Vue_Router-4.5.1-4FC08D?logo=vue.js&logoColor=white)](https://router.vuejs.org/)             | Vue.js 공식 라우터                                  | MIT        |
-| 상태 관리   | [![Pinia](https://img.shields.io/badge/Pinia-2.3.1-4FC08D?logo=vue.js&logoColor=white)](https://pinia.vuejs.org/)                        | Vue.js를 위한 직관적인 상태 관리 라이브러리         | MIT        |
-| UI/스타일링 | [![Headless UI](https://img.shields.io/badge/Headless_UI-1.7.23-000000?logo=headlessui&logoColor=white)](https://headlessui.com/)        | 완전히 스타일이 없는 접근 가능한 UI 컴포넌트        | MIT        |
-|             | [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4.0-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)      | 유틸리티 우선 CSS 프레임워크                        | MIT        |
-|             | [![SASS](https://img.shields.io/badge/SASS-1.89.2-CC6699?logo=sass&logoColor=white)](https://sass-lang.com/)                             | CSS 전처리기                                        | MIT        |
-| 폼 검증     | [![VeeValidate](https://img.shields.io/badge/VeeValidate-4.15.1-4FC08D?logo=vue.js&logoColor=white)](https://vee-validate.logaretm.com/) | Vue.js용 폼 검증 라이브러리                         | MIT        |
-|             | [![Zod](https://img.shields.io/badge/Zod-3.25.76-3E67B1?logo=zod&logoColor=white)](https://zod.dev/)                                     | TypeScript 우선 스키마 검증 라이브러리              | MIT        |
-| 비동기 통신 | [![Axios](https://img.shields.io/badge/Axios-1.11.0-5A29E4?logo=axios&logoColor=white)](https://axios-http.com/)                         | Promise 기반 HTTP 클라이언트                        | MIT        |
-|             | [![MSW](https://img.shields.io/badge/MSW-2.10.5-FF6B6B?logo=msw&logoColor=white)](https://mswjs.io/)                                     | API 모킹 라이브러리                                 | MIT        |
-| 개발 도구   | [![ESLint](https://img.shields.io/badge/ESLint-9.32.0-4B32C3?logo=eslint&logoColor=white)](https://eslint.org/)                          | JavaScript 린터                                     | MIT        |
-|             | [![Prettier](https://img.shields.io/badge/Prettier-3.6.2-F7B93E?logo=prettier&logoColor=black)](https://prettier.io/)                    | 코드 포맷터                                         | MIT        |
-|             | [![PostCSS](https://img.shields.io/badge/PostCSS-8.5.6-DD3A0A?logo=postcss&logoColor=white)](https://postcss.org/)                       | CSS 변환 도구                                       | MIT        |
-| 테스트      | [![Vitest](https://img.shields.io/badge/Vitest-1.6.1-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)                           | 빠른 단위 테스트 프레임워크                         | MIT        |
-|             | [![Vue Test Utils](https://img.shields.io/badge/Vue_Test_Utils-2.4.0-4FC08D?logo=vue.js&logoColor=white)](https://test-utils.vuejs.org/) | Vue 컴포넌트 테스트 유틸리티                        | MIT        |
-| 문서화      | [![Storybook](https://img.shields.io/badge/Storybook-8.6.14-FF4785?logo=storybook&logoColor=white)](https://storybook.js.org/)           | UI 컴포넌트 개발 도구                               | MIT        |
-| 유틸리티    | [![date-fns](https://img.shields.io/badge/date_fns-3.6.0-770C56)](https://date-fns.org/)                                                 | 모듈러 JavaScript 날짜 유틸리티 라이브러리          | MIT        |
-|             | [![date-fns-tz](https://img.shields.io/badge/date_fns_tz-3.2.0-770C56)](https://github.com/marnusw/date-fns-tz)                          | 타임존 지원 날짜 유틸리티                           | MIT        |
-|             | [![zxcvbn](https://img.shields.io/badge/zxcvbn-4.4.2-000000)](https://github.com/dropbox/zxcvbn)                                         | 비밀번호 강도 측정 라이브러리                       | MIT        |
-|             | [![change-case](https://img.shields.io/badge/change_case-5.4.4-000000)](https://github.com/blakeembrey/change-case)                      | 문자열 케이스 변환 유틸리티                         | MIT        |
-| 디자인 토큰 | [![Style Dictionary](https://img.shields.io/badge/Style_Dictionary-4.4.0-000000)](https://amzn.github.io/style-dictionary/)              | 디자인 토큰 변환 도구                               | Apache-2.0 |
-|             | [![Tokens Studio](https://img.shields.io/badge/Tokens_Studio-2.0.1-000000)](https://tokens.studio/)                                      | Figma 디자인 토큰 플러그인                          | MIT        |
-| 모바일      | [![Expo](https://img.shields.io/badge/Expo-53.0.20-000020?logo=expo&logoColor=white)](https://expo.dev/)                                 | React Native 개발 플랫폼                            | MIT        |
-|             | [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)                            | 사용자 인터페이스 구축을 위한 JavaScript 라이브러리 | MIT        |
-|             | [![React Native](https://img.shields.io/badge/React_Native-0.80.1-61DAFB?logo=react&logoColor=white)](https://reactnative.dev/)          | 모바일 앱 개발 프레임워크                           | MIT        |
-| 블록체인    | [![Solidity](https://img.shields.io/badge/Solidity-0.8.20-363636?logo=solidity&logoColor=white)](https://soliditylang.org/)              | 스마트 컨트랙트 개발 언어                           | GPL-3.0    |
-|             | [![Hardhat](https://img.shields.io/badge/Hardhat-2.22.19-FFF04D?logo=hardhat&logoColor=black)](https://hardhat.org/)                     | 이더리움 개발 환경                                  | MIT        |
-|             | [![OpenZeppelin](https://img.shields.io/badge/OpenZeppelin-5.2.0-4E5EE4?logo=openzeppelin&logoColor=white)](https://openzeppelin.com/)   | 스마트 컨트랙트 보안 라이브러리                     | MIT        |
-|             | [![Ethers.js](https://img.shields.io/badge/Ethers.js-6.13.4-2535A0?logo=ethereum&logoColor=white)](https://docs.ethers.org/)             | 블록체인 인터랙션 라이브러리                        | MIT        |
+| 핵심 기술   | [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)                           | 사용자 인터페이스 구축을 위한 JavaScript 라이브러리 | MIT        |
+|             | [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)                | JavaScript 런타임 환경                              | MIT        |
+|             | [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)  | JavaScript의 타입이 있는 상위 집합                  | Apache-2.0 |
+| 빌드 도구   | [![Vite](https://img.shields.io/badge/Vite-5.4.19-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)                               | 차세대 프론트엔드 빌드 도구                         | MIT        |
+|             | [![PNPM](https://img.shields.io/badge/PNPM-%3E%3D8.0.0-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)                             | 빠르고 효율적인 패키지 매니저                       | MIT        |
+| UI/스타일링 | [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4.0-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)     | 유틸리티 우선 CSS 프레임워크                        | MIT        |
+| 블록체인    | [![Solidity](https://img.shields.io/badge/Solidity-0.8.20-363636?logo=solidity&logoColor=white)](https://soliditylang.org/)             | 스마트 컨트랙트 개발 언어                           | GPL-3.0    |
+|             | [![Hardhat](https://img.shields.io/badge/Hardhat-2.22.19-FFF04D?logo=hardhat&logoColor=black)](https://hardhat.org/)                    | 이더리움 개발 환경                                  | MIT        |
+|             | [![OpenZeppelin](https://img.shields.io/badge/OpenZeppelin-5.2.0-4E5EE4?logo=openzeppelin&logoColor=white)](https://openzeppelin.com/)  | 스마트 컨트랙트 보안 라이브러리                     | MIT        |
+|             | [![Ethers.js](https://img.shields.io/badge/Ethers.js-6.13.4-2535A0?logo=ethereum&logoColor=white)](https://docs.ethers.org/)            | 블록체인 인터랙션 라이브러리                        | MIT        |
+| 개발 도구   | [![ESLint](https://img.shields.io/badge/ESLint-9.32.0-4B32C3?logo=eslint&logoColor=white)](https://eslint.org/)                         | JavaScript 린터                                     | MIT        |
+|             | [![Prettier](https://img.shields.io/badge/Prettier-3.6.2-F7B93E?logo=prettier&logoColor=black)](https://prettier.io/)                   | 코드 포맷터                                         | MIT        |
+| 테스트      | [![Chai](https://img.shields.io/badge/Chai-5.1.2-A30701?logo=chai&logoColor=white)](https://chaijs.com/)                                | 테스트 프레임워크                                   | MIT        |
+
+## 🔐 보안 고려사항
+
+- ✅ OpenZeppelin 검증된 컨트랙트 라이브러리 사용
+- ✅ KYC/AML 인증 시스템
+- ✅ 역할 기반 접근 제어 (RBAC)
+- ✅ 락업 기간 및 양도 제한
+- ✅ 재진입 공격 방지
+- ✅ 정수 오버플로우 방지 (Solidity 0.8+)
+
+## 📖 추가 문서
+
+- [스마트 컨트랙트 상세 가이드](./packages/contracts/README.md)
+- [프로젝트 구조](./packages/contracts/PROJECT_STRUCTURE.md)
+- [시나리오 리뷰](./packages/contracts/SCENARIO_REVIEW.md)
+
+## 📝 라이선스
+
+이 프로젝트는 PoC(Proof of Concept) 목적으로 개발되었습니다.
 
 ---
+
+**Note:** 이 프로젝트는 디지털 월렛 소스를 재활용하여 개발되었으며, PF 토큰 증권화 PoC를 위한 화면과 컨트랙트로 구성되어 있습니다.
